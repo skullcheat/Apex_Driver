@@ -1,5 +1,5 @@
 # => DRIVER DETECTED IN APEX LEGENDS ! <=
-# Kernel driver for apex legends
+# Kernel driver ( tested on apex legends )
 # -> Install WDK 2019 video for explaint here : https://www.youtube.com/watch?v=HFobGp7VZeA&ab_channel=TroubleChute
 # -> Work all Window 10 Max 21H2
 
