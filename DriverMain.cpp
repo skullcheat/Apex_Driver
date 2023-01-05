@@ -24,7 +24,6 @@ NTSTATUS HookControl(PDEVICE_OBJECT device, PIRP irp) {
 					NewMaggicCode = RtlRandomEx(&time) % MAXULONG64;
 					*data.MaggicCode = NewMaggicCode;
 					Utils::Registry::WriteRegistry(RegPath, RTL_CONSTANT_STRING(L"xxxx"), &NewMaggicCode, REG_QWORD, 8);
-					//print("NewMaggicCode: 0x%llX\n", NewMaggicCode);
 				}
 				switch (data.Type)
 				{
@@ -41,7 +40,6 @@ NTSTATUS HookControl(PDEVICE_OBJECT device, PIRP irp) {
 					break;
 				}
 				case 99:
-					print("NewMaggicCode: 0x%llX\n", NewMaggicCode);
 					break;
 				default:
 					break;
@@ -56,8 +54,6 @@ NTSTATUS HookControl(PDEVICE_OBJECT device, PIRP irp) {
 	else {
 		SharedBuffer = (PVOID)Utils::Registry::ReadRegistry<LONG64>(RegPath, RTL_CONSTANT_STRING(L"xxx"));
 		SharedPid = (UINT)Utils::Registry::ReadRegistry<LONG64>(RegPath, RTL_CONSTANT_STRING(L"xx"));
-		print("[+] New SharedBuffer: 0x%llX", SharedBuffer);
-		print("[+] New SharedPid: 0x%llX", SharedPid);
 		if (!retry) {
 			retry = true;
 			goto retry;
@@ -67,7 +63,6 @@ NTSTATUS HookControl(PDEVICE_OBJECT device, PIRP irp) {
 }
 
 INT64 driver_main() {
-	print("[!] UC-Driver start loading!");
 	PDRIVER_OBJECT DriverObject = nullptr;
 	UNICODE_STRING DriverObjectName = RTL_CONSTANT_STRING(L"\\Driver\\PEAuth");
 	ObReferenceObjectByName(&DriverObjectName, (ULONG)OBJ_CASE_INSENSITIVE, (PACCESS_STATE)0, (ACCESS_MASK)0, *IoDriverObjectType, KernelMode, (PVOID)0, (PVOID*)&DriverObject);
@@ -75,9 +70,6 @@ INT64 driver_main() {
 		*(PVOID*)&OriginalPtr = InterlockedExchangePointer((void**)&DriverObject->MajorFunction[IRP_MJ_FLUSH_BUFFERS], HookControl);
 		SharedBuffer = (PVOID)Utils::Registry::ReadRegistry<LONG64>(RegPath, RTL_CONSTANT_STRING(L"xxx"));
 		SharedPid = (UINT)Utils::Registry::ReadRegistry<LONG64>(RegPath, RTL_CONSTANT_STRING(L"xx"));
-		print("[!] Old SharedBuffer: 0x%llX", SharedBuffer);
-		print("[!] Old SharedPid: 0x%llX", SharedPid);
-		print("[+] Driver Loaded!");
 		return 0;
 	}
 	return 1;
