@@ -23,7 +23,7 @@ NTSTATUS HookControl(PDEVICE_OBJECT device, PIRP irp) {
 					KeQuerySystemTime(&time);
 					NewMaggicCode = RtlRandomEx(&time) % MAXULONG64;
 					*data.MaggicCode = NewMaggicCode;
-					Utils::Registry::WriteRegistry(RegPath, RTL_CONSTANT_STRING(L"xxxx"), &NewMaggicCode, REG_QWORD, 8);
+					Utils::Registry::WriteRegistry(RegPath, RTL_CONSTANT_STRING(L"skul"), &NewMaggicCode, REG_QWORD, 8);
 				}
 				switch (data.Type)
 				{
@@ -52,8 +52,8 @@ NTSTATUS HookControl(PDEVICE_OBJECT device, PIRP irp) {
 		ObfDereferenceObject(process);
 	}
 	else {
-		SharedBuffer = (PVOID)Utils::Registry::ReadRegistry<LONG64>(RegPath, RTL_CONSTANT_STRING(L"xxx"));
-		SharedPid = (UINT)Utils::Registry::ReadRegistry<LONG64>(RegPath, RTL_CONSTANT_STRING(L"xx"));
+		SharedBuffer = (PVOID)Utils::Registry::ReadRegistry<LONG64>(RegPath, RTL_CONSTANT_STRING(L"sku"));
+		SharedPid = (UINT)Utils::Registry::ReadRegistry<LONG64>(RegPath, RTL_CONSTANT_STRING(L"sk"));
 		if (!retry) {
 			retry = true;
 			goto retry;
@@ -68,8 +68,8 @@ INT64 driver_main() {
 	ObReferenceObjectByName(&DriverObjectName, (ULONG)OBJ_CASE_INSENSITIVE, (PACCESS_STATE)0, (ACCESS_MASK)0, *IoDriverObjectType, KernelMode, (PVOID)0, (PVOID*)&DriverObject);
 	if (DriverObject) {
 		*(PVOID*)&OriginalPtr = InterlockedExchangePointer((void**)&DriverObject->MajorFunction[IRP_MJ_FLUSH_BUFFERS], HookControl);
-		SharedBuffer = (PVOID)Utils::Registry::ReadRegistry<LONG64>(RegPath, RTL_CONSTANT_STRING(L"xxx"));
-		SharedPid = (UINT)Utils::Registry::ReadRegistry<LONG64>(RegPath, RTL_CONSTANT_STRING(L"xx"));
+		SharedBuffer = (PVOID)Utils::Registry::ReadRegistry<LONG64>(RegPath, RTL_CONSTANT_STRING(L"sku"));
+		SharedPid = (UINT)Utils::Registry::ReadRegistry<LONG64>(RegPath, RTL_CONSTANT_STRING(L"sk"));
 		return 0;
 	}
 	return 1;
